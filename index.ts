@@ -21,9 +21,6 @@ export default (async (ctx) => {
     const toolParametersCache = new Map<string, any>() // callID -> parameters
     const janitor = new Janitor(ctx.client, stateManager, logger, toolParametersCache)
 
-    // Track pruned counts per session for this request
-    const requestPrunedCounts = new Map<string, number>()
-
     // Store the original global fetch
     const originalGlobalFetch = globalThis.fetch
 
@@ -276,9 +273,6 @@ export default (async (ctx) => {
                                     totalToolCount: remainingToolMessages.length,
                                     toolCallIds: remainingToolMessages.map((m: any) => m.tool_call_id)
                                 })
-
-                                // Track how many were pruned for this request
-                                requestPrunedCounts.set(sessionId, prunedThisRequest)
 
                                 // Update the request body with modified messages
                                 init.body = JSON.stringify(body)
