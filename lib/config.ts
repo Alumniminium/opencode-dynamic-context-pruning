@@ -550,11 +550,12 @@ function createDefaultConfig(): void {
   // LLM-driven context pruning tools
   "tools": {
     // Shared settings for all prune tools
-    "settings": {
+      "settings": {
       // Nudge the LLM to use prune tools (every <nudgeFrequency> tool results)
       "nudgeEnabled": true,
       "nudgeFrequency": 10,
       // Additional tools to protect from pruning
+      // Supports wildcard patterns with * (e.g., "webdev_*", "*_read")
       "protectedTools": []
     },
     // Removes tool content from context without preservation (for completed tasks or noise)
@@ -574,6 +575,7 @@ function createDefaultConfig(): void {
     "deduplication": {
       "enabled": true,
       // Additional tools to protect from pruning
+      // Supports wildcard patterns with * (e.g., "webdev_*", "*_read")
       "protectedTools": []
     },
     // Prune write tool inputs when the file has been subsequently read
@@ -586,12 +588,14 @@ function createDefaultConfig(): void {
       // Number of turns before errored tool inputs are pruned
       "turns": 4,
       // Additional tools to protect from pruning
+      // Supports wildcard patterns with * (e.g., "webdev_*", "*_read")
       "protectedTools": []
     },
     // (Legacy) Run an LLM to analyze what tool calls are no longer relevant on idle
     "onIdle": {
       "enabled": false,
       // Additional tools to protect from pruning
+      // Supports wildcard patterns with * (e.g., "webdev_*", "*_read")
       "protectedTools": [],
       // Override model for analysis (format: "provider/model")
       // "model": "anthropic/claude-haiku-4-5",

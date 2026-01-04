@@ -9,6 +9,7 @@ import { saveSessionState } from "../state/persistence"
 import type { Logger } from "../logger"
 import { loadPrompt } from "../prompt"
 import { calculateTokensSaved, getCurrentParams } from "./utils"
+import { isToolProtected } from "../shared-utils"
 
 const DISCARD_TOOL_DESCRIPTION = loadPrompt("discard-tool-spec")
 const EXTRACT_TOOL_DESCRIPTION = loadPrompt("extract-tool-spec")
@@ -80,7 +81,7 @@ async function executePruneOperation(
             return "Invalid IDs provided. Only use numeric IDs from the <prunable-tools> list."
         }
         const allProtectedTools = config.tools.settings.protectedTools
-        if (allProtectedTools.includes(metadata.tool)) {
+        if (isToolProtected(metadata.tool, allProtectedTools)) {
             logger.debug("Rejecting prune request - protected tool", {
                 index,
                 id,

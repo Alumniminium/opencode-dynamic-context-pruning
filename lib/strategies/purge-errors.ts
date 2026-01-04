@@ -3,6 +3,7 @@ import { Logger } from "../logger"
 import type { SessionState, WithParts } from "../state"
 import { buildToolIdList } from "../messages/utils"
 import { calculateTokensSaved } from "./utils"
+import { isToolProtected } from "../shared-utils"
 
 /**
  * Purge Errors strategy - prunes tool inputs for tools that errored
@@ -48,7 +49,7 @@ export const purgeErrors = (
         }
 
         // Skip protected tools
-        if (protectedTools.includes(metadata.tool)) {
+        if (isToolProtected(metadata.tool, protectedTools)) {
             continue
         }
 

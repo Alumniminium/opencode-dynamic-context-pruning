@@ -3,7 +3,7 @@ import type { Logger } from "../logger"
 import type { PluginConfig } from "../config"
 import { loadPrompt } from "../prompt"
 import { extractParameterKey, buildToolIdList, createSyntheticUserMessage } from "./utils"
-import { getLastUserMessage, isMessageCompacted } from "../shared-utils"
+import { getLastUserMessage, isMessageCompacted, isToolProtected } from "../shared-utils"
 
 const PRUNED_TOOL_INPUT_REPLACEMENT =
     "[content removed to save context, this is not what was written to the file, but a placeholder]"
@@ -63,7 +63,7 @@ const buildPrunableToolsList = (
         }
 
         const allProtectedTools = config.tools.settings.protectedTools
-        if (allProtectedTools.includes(toolParameterEntry.tool)) {
+        if (isToolProtected(toolParameterEntry.tool, allProtectedTools)) {
             return
         }
 

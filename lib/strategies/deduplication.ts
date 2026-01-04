@@ -3,6 +3,7 @@ import { Logger } from "../logger"
 import type { SessionState, WithParts } from "../state"
 import { buildToolIdList } from "../messages/utils"
 import { calculateTokensSaved } from "./utils"
+import { isToolProtected } from "../shared-utils"
 
 /**
  * Deduplication strategy - prunes older tool calls that have identical
@@ -46,7 +47,7 @@ export const deduplicate = (
         }
 
         // Skip protected tools
-        if (protectedTools.includes(metadata.tool)) {
+        if (isToolProtected(metadata.tool, protectedTools)) {
             continue
         }
 

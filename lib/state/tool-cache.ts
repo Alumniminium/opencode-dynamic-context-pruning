@@ -1,7 +1,7 @@
 import type { SessionState, ToolStatus, WithParts } from "./index"
 import type { Logger } from "../logger"
 import { PluginConfig } from "../config"
-import { isMessageCompacted } from "../shared-utils"
+import { isMessageCompacted, isToolProtected } from "../shared-utils"
 
 const MAX_TOOL_CACHE_SIZE = 1000
 
@@ -48,7 +48,7 @@ export async function syncToolCache(
 
                 if (part.tool === "discard" || part.tool === "extract") {
                     state.nudgeCounter = 0
-                } else if (!allProtectedTools.includes(part.tool) && !isProtectedByTurn) {
+                } else if (!isToolProtected(part.tool, allProtectedTools) && !isProtectedByTurn) {
                     state.nudgeCounter++
                 }
 

@@ -7,7 +7,7 @@ import { selectModel, ModelInfo } from "../model-selector"
 import { saveSessionState } from "../state/persistence"
 import { sendUnifiedNotification } from "../ui/notification"
 import { calculateTokensSaved, getCurrentParams } from "./utils"
-import { isMessageCompacted } from "../shared-utils"
+import { isMessageCompacted, isToolProtected } from "../shared-utils"
 
 export interface OnIdleResult {
     prunedCount: number
@@ -107,7 +107,7 @@ async function runLlmAnalysis(
     const protectedToolCallIds: string[] = []
     const prunableToolCallIds = unprunedToolCallIds.filter((id) => {
         const metadata = toolMetadata.get(id)
-        if (metadata && config.strategies.onIdle.protectedTools.includes(metadata.tool)) {
+        if (metadata && isToolProtected(metadata.tool, config.strategies.onIdle.protectedTools)) {
             protectedToolCallIds.push(id)
             return false
         }
@@ -246,7 +246,7 @@ export async function runOnIdle(
         // Count prunable tools (excluding protected)
         const candidateCount = unprunedToolCallIds.filter((id) => {
             const metadata = toolMetadata.get(id)
-            return !metadata || !config.strategies.onIdle.protectedTools.includes(metadata.tool)
+            return !metadata || !isToolProtected(metadata.tool, config.strategies.onIdle.protectedTools)
         }).length
 
         if (candidateCount === 0) {
