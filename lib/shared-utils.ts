@@ -15,7 +15,7 @@ export const getLastUserMessage = (messages: WithParts[]): WithParts | null => {
 }
 
 /**
- * Converts a wildcard pattern to a RegExp.
+ * Converts a wildcard pattern to a regex.
  * Supports * as a wildcard matching any characters.
  * Escapes special regex characters except *.
  */
@@ -27,7 +27,7 @@ export const wildcardToRegex = (pattern: string): RegExp => {
 
 /**
  * Checks if a tool name matches any protected tool pattern.
- * Supports both exact matches and wildcard patterns (e.g., "webdev_*").
+ * Supports both exact matches and wildcard patterns (e.g., "mcp__server__prefix_*").
  */
 export const isToolProtected = (toolName: string, protectedPatterns: string[]): boolean => {
     return protectedPatterns.some((pattern) => {
