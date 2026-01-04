@@ -23,7 +23,49 @@ Using `@latest` ensures you always get the newest version automatically when Ope
 
 ### Local Development
 
-To test changes locally without publishing to npm, see [Local Development](#local-development).
+To test changes locally without publishing to npm:
+
+1. **Build the plugin:**
+   ```bash
+   npm run build
+   ```
+
+2. **Package for local use:**
+   ```bash
+   npm pack
+   # Creates: opencode-dynamic-context-pruning-1.1.2.tgz
+   ```
+
+3. **Copy to plugin directory (replaces existing):**
+   ```bash
+   cp opencode-dynamic-context-pruning-*.tgz ~/.config/opencode/plugin/
+   ```
+
+4. **Create dependencies config:**
+   ```bash
+   cat > ~/.config/opencode/package.json << 'EOF'
+   {
+     "dependencies": {
+       "opencode-dynamic-context-pruning": "file:./plugin/opencode-dynamic-context-pruning-1.1.2.tgz"
+     }
+   }
+   EOF
+   ```
+
+5. **Add to OpenCode plugin list:**
+   ```bash
+   # Edit ~/.config/opencode/opencode.json
+   "plugin": ["opencode-dynamic-context-pruning", "...other-plugins"]
+   ```
+
+6. **Restart OpenCode** - Bun will extract and install dependencies automatically.
+
+To rebuild after code changes:
+```bash
+npm run build && npm pack
+cp opencode-dynamic-context-pruning-*.tgz ~/.config/opencode/plugin/
+```
+Restart OpenCode to load the updated version.
 
 > **Note:** If you use OAuth plugins (e.g., for Google or other services), place this plugin last in your `plugin` array to avoid interfering with their authentication flows.
 
@@ -149,7 +191,24 @@ When enabled, turn protection prevents tool outputs from being pruned for a conf
 By default, these tools are always protected from pruning across all strategies:
 `task`, `todowrite`, `todoread`, `discard`, `extract`, `batch`
 
-The `protectedTools` arrays in each section add to this default list.
+The `protectedTools` arrays in each section add to this default list and support **wildcard patterns**:
+
+- **Exact matches**: `"read"`, `"webdev_browser_click"`
+- **Prefix wildcard**: `"webdev_*"` matches any tool starting with `webdev_`
+- **Suffix wildcard**: `"*_read"` matches any tool ending with `_read`
+- **Contains wildcard**: `"*Remnant*"` matches any tool containing `Remnant`
+- **Combined**: Mix patterns like `["*__Remnant", "*Remnant*", "task"]`
+
+Examples:
+```jsonc
+"protectedTools": [
+  "webdev_*",           // All webdev browser tools
+  "*_read",              // All read operations
+  "*__Remnant",           // Tools ending with __Remnant
+  "*Remnant*",            // Tools containing Remnant
+  "task"                  // Exact match
+]
+```
 
 ### Config Precedence
 
