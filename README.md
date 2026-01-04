@@ -15,41 +15,41 @@ Add to your OpenCode config:
 ```jsonc
 // opencode.jsonc
 {
-    "plugin": ["opencode-dynamic-context-pruning@latest"],
+    "plugin": ["@tarquinen/opencode-dcp@latest"],
 }
 ```
 
 Using `@latest` ensures you always get the newest version automatically when OpenCode starts.
 
+> **Note:** If you use OAuth plugins (e.g., for Google or other services), place this plugin last in your `plugin` array to avoid interfering with their authentication flows.
+
 ### Local Development
 
 To test changes locally without publishing to npm:
 
-1. **Build the plugin:**
+- **Change Package name:**
+    ```bash
+    # edit package.json
+    "name": "@tarquinen/opencode-dcp", 
+    # to
+    "name": "opencode-dynamic-context-pruning",
+    ```
+
+- **Package for local use:**
    ```bash
-   npm run build
+   npm run build && npm pack
+   # Creates: opencode-dynamic-context-pruning-[version].tgz
+   cp opencode-dynamic-context-pruning-[version].tgz ~/.config/opencode/plugin/
    ```
 
-2. **Package for local use:**
+- **Create dependencies config:**
    ```bash
-   npm pack
-   # Creates: opencode-dynamic-context-pruning-1.1.2.tgz
-   ```
-
-3. **Copy to plugin directory (replaces existing):**
-   ```bash
-   cp opencode-dynamic-context-pruning-*.tgz ~/.config/opencode/plugin/
-   ```
-
-4. **Create dependencies config:**
-   ```bash
-   cat > ~/.config/opencode/package.json << 'EOF'
+   # Edit ~/.config/opencode/package.json
    {
      "dependencies": {
-       "opencode-dynamic-context-pruning": "file:./plugin/opencode-dynamic-context-pruning-1.1.2.tgz"
+       "opencode-dynamic-context-pruning": "file:./plugin/opencode-dynamic-context-pruning-[version].tgz"
      }
    }
-   EOF
    ```
 
 5. **Add to OpenCode plugin list:**
@@ -63,11 +63,9 @@ To test changes locally without publishing to npm:
 To rebuild after code changes:
 ```bash
 npm run build && npm pack
-cp opencode-dynamic-context-pruning-*.tgz ~/.config/opencode/plugin/
+cp opencode-dynamic-context-pruning-[version].tgz ~/.config/opencode/plugin/
 ```
 Restart OpenCode to load the updated version.
-
-> **Note:** If you use OAuth plugins (e.g., for Google or other services), place this plugin last in your `plugin` array to avoid interfering with their authentication flows.
 
 ## How Pruning Works
 

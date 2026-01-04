@@ -1,6 +1,6 @@
 {
     "$schema": "https://json.schemastore.org/package.json",
-    "name": "opencode-dynamic-context-pruning",
+    "name": "@tarquinen/opencode-dcp",
     "version": "1.1.2",
     "type": "module",
     "description": "OpenCode plugin that optimizes token usage by pruning obsolete tool outputs from conversation context",
