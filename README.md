@@ -10,18 +10,22 @@ Automatically reduces token usage in OpenCode by removing obsolete tool outputs 
 
 Add to your OpenCode config:
 
+### From npm (recommended for production use)
+
 ```jsonc
 // opencode.jsonc
 {
-    "plugin": ["@tarquinen/opencode-dcp@latest"],
+    "plugin": ["opencode-dynamic-context-pruning@latest"],
 }
 ```
 
 Using `@latest` ensures you always get the newest version automatically when OpenCode starts.
 
-> **Note:** If you use OAuth plugins (e.g., for Google or other services), place this plugin last in your `plugin` array to avoid interfering with their authentication flows.
+### Local Development
 
-Restart OpenCode. The plugin will automatically start optimizing your sessions.
+To test changes locally without publishing to npm, see [Local Development](#local-development).
+
+> **Note:** If you use OAuth plugins (e.g., for Google or other services), place this plugin last in your `plugin` array to avoid interfering with their authentication flows.
 
 ## How Pruning Works
 
