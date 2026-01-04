@@ -9,7 +9,6 @@ import { saveSessionState } from "../state/persistence"
 import type { Logger } from "../logger"
 import { loadPrompt } from "../prompt"
 import { calculateTokensSaved, getCurrentParams } from "./utils"
-import { isToolProtected } from "../shared-utils"
 
 const DISCARD_TOOL_DESCRIPTION = loadPrompt("discard-tool-spec")
 const EXTRACT_TOOL_DESCRIPTION = loadPrompt("extract-tool-spec")
@@ -60,7 +59,12 @@ async function executePruneOperation(
     await ensureSessionInitialized(ctx.client, state, sessionId, logger, messages)
 
     const currentParams = getCurrentParams(messages, logger)
-    const toolIdList: string[] = buildToolIdList(state, messages, logger)
+    const toolIdList: string[] = buildToolIdList(
+        state,
+        messages,
+        logger,
+        config.tools.settings.protectedTools,
+    )
 
     // Validate that all numeric IDs are within bounds
     if (numericToolIds.some((id) => id < 0 || id >= toolIdList.length)) {
@@ -68,7 +72,7 @@ async function executePruneOperation(
         return "Invalid IDs provided. Only use numeric IDs from the <prunable-tools> list."
     }
 
-    // Validate that all IDs exist in cache and aren't protected
+    // Validate that all IDs exist in cache
     // (rejects hallucinated IDs and turn-protected tools not shown in <prunable-tools>)
     for (const index of numericToolIds) {
         const id = toolIdList[index]
@@ -78,15 +82,6 @@ async function executePruneOperation(
                 "Rejecting prune request - ID not in cache (turn-protected or hallucinated)",
                 { index, id },
             )
-            return "Invalid IDs provided. Only use numeric IDs from the <prunable-tools> list."
-        }
-        const allProtectedTools = config.tools.settings.protectedTools
-        if (isToolProtected(metadata.tool, allProtectedTools)) {
-            logger.debug("Rejecting prune request - protected tool", {
-                index,
-                id,
-                tool: metadata.tool,
-            })
             return "Invalid IDs provided. Only use numeric IDs from the <prunable-tools> list."
         }
     }

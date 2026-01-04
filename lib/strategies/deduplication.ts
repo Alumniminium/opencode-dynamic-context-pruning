@@ -3,7 +3,6 @@ import { Logger } from "../logger"
 import type { SessionState, WithParts } from "../state"
 import { buildToolIdList } from "../messages/utils"
 import { calculateTokensSaved } from "./utils"
-import { isToolProtected } from "../shared-utils"
 
 /**
  * Deduplication strategy - prunes older tool calls that have identical
@@ -21,7 +20,12 @@ export const deduplicate = (
     }
 
     // Build list of all tool call IDs from messages (chronological order)
-    const allToolIds = buildToolIdList(state, messages, logger)
+    const allToolIds = buildToolIdList(
+        state,
+        messages,
+        logger,
+        config.strategies.deduplication.protectedTools,
+    )
     if (allToolIds.length === 0) {
         return
     }
@@ -34,8 +38,6 @@ export const deduplicate = (
         return
     }
 
-    const protectedTools = config.strategies.deduplication.protectedTools
-
     // Group by signature (tool name + normalized parameters)
     const signatureMap = new Map<string, string[]>()
 
@@ -43,11 +45,6 @@ export const deduplicate = (
         const metadata = state.toolParameters.get(id)
         if (!metadata) {
             // logger.warn(`Missing metadata for tool call ID: ${id}`)
-            continue
-        }
-
-        // Skip protected tools
-        if (isToolProtected(metadata.tool, protectedTools)) {
             continue
         }
 

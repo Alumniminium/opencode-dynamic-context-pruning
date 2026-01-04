@@ -3,7 +3,6 @@ import { Logger } from "../logger"
 import type { SessionState, WithParts } from "../state"
 import { buildToolIdList } from "../messages/utils"
 import { calculateTokensSaved } from "./utils"
-import { isToolProtected } from "../shared-utils"
 
 /**
  * Purge Errors strategy - prunes tool inputs for tools that errored
@@ -24,7 +23,12 @@ export const purgeErrors = (
     }
 
     // Build list of all tool call IDs from messages (chronological order)
-    const allToolIds = buildToolIdList(state, messages, logger)
+    const allToolIds = buildToolIdList(
+        state,
+        messages,
+        logger,
+        config.strategies.purgeErrors.protectedTools,
+    )
     if (allToolIds.length === 0) {
         return
     }
@@ -37,7 +41,6 @@ export const purgeErrors = (
         return
     }
 
-    const protectedTools = config.strategies.purgeErrors.protectedTools
     const turnThreshold = config.strategies.purgeErrors.turns
 
     const newPruneIds: string[] = []
@@ -45,11 +48,6 @@ export const purgeErrors = (
     for (const id of unprunedIds) {
         const metadata = state.toolParameters.get(id)
         if (!metadata) {
-            continue
-        }
-
-        // Skip protected tools
-        if (isToolProtected(metadata.tool, protectedTools)) {
             continue
         }
 

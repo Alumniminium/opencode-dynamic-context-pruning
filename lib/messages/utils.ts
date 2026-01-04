@@ -1,5 +1,5 @@
 import { Logger } from "../logger"
-import { isMessageCompacted } from "../shared-utils"
+import { isMessageCompacted, isToolProtected } from "../shared-utils"
 import type { SessionState, WithParts } from "../state"
 import type { UserMessage } from "@opencode-ai/sdk"
 
@@ -121,6 +121,7 @@ export function buildToolIdList(
     state: SessionState,
     messages: WithParts[],
     logger: Logger,
+    protectedTools?: string[],
 ): string[] {
     const toolIds: string[] = []
     for (const msg of messages) {
@@ -130,6 +131,10 @@ export function buildToolIdList(
         if (msg.parts) {
             for (const part of msg.parts) {
                 if (part.type === "tool" && part.callID && part.tool) {
+                    // Skip protected tools if a list is provided
+                    if (protectedTools && isToolProtected(part.tool, protectedTools)) {
+                        continue
+                    }
                     toolIds.push(part.callID)
                 }
             }
