@@ -193,19 +193,16 @@ By default, these tools are always protected from pruning across all strategies:
 
 The `protectedTools` arrays in each section add to this default list and support **wildcard patterns**:
 
-- **Exact matches**: `"read"`, `"webdev_browser_click"`
-- **Prefix wildcard**: `"webdev_*"` matches any tool starting with `webdev_`
-- **Suffix wildcard**: `"*_read"` matches any tool ending with `_read`
-- **Contains wildcard**: `"*Remnant*"` matches any tool containing `Remnant`
-- **Combined**: Mix patterns like `["*__Remnant", "*Remnant*", "task"]`
+- **Exact matches**: `"read"`, `"playwright_browser_click"`
+- **Prefix/Suffix wildcard**: `"playwright_*"` matches any tool starting with `playwright_`, `"*_read"` matches any tool ending with `_read`
+- **Contains**: `"*custom*"` matches any tool containing `custom`
 
 Examples:
 ```jsonc
 "protectedTools": [
-  "webdev_*",           // All webdev browser tools
+  "playwright_*",        // All playwright browser tools
   "*_read",              // All read operations
-  "*__Remnant",           // Tools ending with __Remnant
-  "*Remnant*",            // Tools containing Remnant
+  "*_custom",            // Tools ending with _custom
   "task"                  // Exact match
 ]
 ```
